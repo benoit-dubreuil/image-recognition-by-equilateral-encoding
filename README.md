@@ -1,1 +1,1 @@
-# image-recognition-by-equilateral-encoding
+# Image Recognition by Equilateral Encoding
