@@ -2,9 +2,11 @@ package org.benoitdubreuil.iree.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class MainWindow extends JFrame {
 
+    private static final String TITLE = "Image Recognition by Equilateral Encoding";
     private static final int IMAGE_BORDER_SIZE = 10;
     private static final int CENTER_ROW_COUNT = 2;
     private static final int CENTER_COLUMN_COUNT = 2;
@@ -20,12 +22,14 @@ public class MainWindow extends JFrame {
     }
 
     private void loadConfiguration() {
+        setTitle(TITLE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         loadGUI();
         loadSize();
 
         setVisible(true);
+        setLocationRelativeTo(null);
     }
 
     private void loadSize() {
@@ -38,11 +42,55 @@ public class MainWindow extends JFrame {
     }
 
     private void loadGUI() {
+        loadMenuGUI();
+
         BorderLayout mainLayout = new BorderLayout();
         getContentPane().setLayout(mainLayout);
 
         loadTopPanelGUI();
         loadCenterPanelGUI();
+    }
+
+    private void loadMenuGUI() {
+        JMenuBar menuBar = new JMenuBar();
+
+        loadMenuFileGUI(menuBar);
+        loadImageFileGUI(menuBar);
+
+        setJMenuBar(menuBar);
+    }
+
+    private void loadMenuFileGUI(JMenuBar menuBar) {
+        JMenu fileMenu = new JMenu("File");
+
+        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.setToolTipText("Exit application");
+
+        exitMenuItem.addActionListener((ActionEvent event) -> {
+            System.exit(0);
+        });
+
+        fileMenu.add(exitMenuItem);
+        menuBar.add(fileMenu);
+    }
+
+    private void loadImageFileGUI(JMenuBar menuBar) {
+        JMenu imageMenu = new JMenu("Image");
+
+        JMenuItem loadRefImgMenuItem = new JMenuItem("Load Ref Image");
+        loadRefImgMenuItem.setToolTipText("Load reference image");
+
+        loadRefImgMenuItem.addActionListener((ActionEvent event) -> {
+        });
+
+        JMenuItem loadImgMenuItem = new JMenuItem("Load Image");
+        loadRefImgMenuItem.setToolTipText("Load image to compare");
+
+        loadImgMenuItem.addActionListener((ActionEvent event) -> {
+        });
+
+        imageMenu.add(loadRefImgMenuItem);
+        menuBar.add(imageMenu);
     }
 
     private void loadTopPanelGUI() {
@@ -72,7 +120,7 @@ public class MainWindow extends JFrame {
 
     private JLabel createImageLabel(int borderSize) {
         JLabel imagePanel = new JLabel();
-        imagePanel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize)); // Utiliser grid layout hgap et vgap instead?
+        imagePanel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize)); // Use grid layout hgap et vgap instead?
 
         return imagePanel;
     }
