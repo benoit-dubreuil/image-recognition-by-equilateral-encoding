@@ -1,7 +1,7 @@
 package org.benoitdubreuil.iree.pattern;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that exists to conveniently implement the {@link IObservable} interface without having to implement its method and add a new variable.
@@ -10,16 +10,17 @@ import java.util.List;
  */
 public class Observable<M> implements IObservable<M> {
 
-    private List<IObserver<M>> m_observers;
+    private Set<IObserver<M>> m_observers;
 
     public Observable() {
-        m_observers = new ArrayList<>();
+        m_observers = new HashSet<>();
     }
 
     @Override
     public void modelChanged(M newValue) {
-        for (IObserver<M> observer : m_observers)
+        for (IObserver<M> observer : m_observers) {
             observer.observableChanged(newValue);
+        }
     }
 
     @Override
