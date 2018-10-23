@@ -4,6 +4,8 @@ import org.benoitdubreuil.iree.pattern.Observable;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 
 public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
 
@@ -29,24 +31,31 @@ public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
         return copy;
     }
 
-    private static void convertToGrayscale(BufferedImage image) {
-        for(int y = 0; y < image.getHeight(); ++y){
-            for(int x = 0; x < image.getWidth(); ++x){
+    private static void convertToGrayscaleRGB(BufferedImage image) {
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
 
-                int orignalPixel = image.getRGB(x,y);
+                int orignalPixel = image.getRGB(x, y);
 
-                int a = (orignalPixel >> 24) & 0xff;
                 int r = (orignalPixel >> 16) & 0xff;
                 int g = (orignalPixel >> 8) & 0xff;
                 int b = orignalPixel & 0xff;
 
                 int average = (r + g + b) / 3;
 
-                int grayscalePixel = (a << 24) | (average << 16) | (average << 8) | average;
+                int grayscalePixel = (average << 16) | (average << 8) | average;
 
                 image.setRGB(x, y, grayscalePixel);
             }
         }
+    }
+
+    private static BufferedImage cloneBufferedImage(BufferedImage image) {
+        ColorModel colorModel = image.getColorModel();
+        boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
+        WritableRaster raster = image.copyData(null);
+
+        return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
     }
 
     public BufferedImage getOriginal() {
@@ -54,10 +63,10 @@ public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
     }
 
     public void setOriginal(BufferedImage original) {
-        m_original = original;
+        m_original = removeTransparency(original);
 
-        m_downScaledGrayscale = removeTransparency(m_original);
-        convertToGrayscale(m_downScaledGrayscale);
+        m_downScaledGrayscale = cloneBufferedImage(m_original);
+        convertToGrayscaleRGB(m_downScaledGrayscale);
 
         modelChanged(this);
     }
