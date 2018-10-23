@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.BiConsumer;
@@ -168,15 +169,31 @@ public class MainWindow extends JFrame implements IObserver<ImageForIREEGUI> {
         return imagePanel;
     }
 
+    private Image createImageFitToLabel(BufferedImage image, JLabel label) {
+        float imageAspectRatio = image.getWidth() / (float) image.getHeight();
+        float labelAspectRatio = label.getWidth() / (float) label.getHeight();
+
+        Image resizedImage;
+
+        if (imageAspectRatio >= labelAspectRatio) {
+            resizedImage = image.getScaledInstance(label.getWidth(), (int) (label.getWidth() * imageAspectRatio), Image.SCALE_SMOOTH);
+        }
+        else {
+            resizedImage = image.getScaledInstance((int) (label.getHeight() * imageAspectRatio), label.getHeight(), Image.SCALE_SMOOTH);
+        }
+
+        return resizedImage;
+    }
+
     @Override
     public void observableChanged(ImageForIREEGUI newValue) {
         if (newValue == m_imageToCompare) {
-            m_imageToCompare_label.setIcon(new ImageIcon(newValue.getOriginal()));
-            m_downScaledImageToCompare_label.setIcon(new ImageIcon(newValue.getDownScaledGrayscale()));
+            m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getOriginal(), m_imageToCompare_label)));
+            m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getDownScaledGrayscale(), m_downScaledImageToCompare_label)));
         }
         else if (newValue == m_referenceImage) {
-            m_referenceImage_label.setIcon(new ImageIcon(newValue.getOriginal()));
-            m_downScaledReferenceImage_label.setIcon(new ImageIcon(newValue.getDownScaledGrayscale()));
+            m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getOriginal(), m_referenceImage_label)));
+            m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getDownScaledGrayscale(), m_downScaledReferenceImage_label)));
         }
     }
 }
