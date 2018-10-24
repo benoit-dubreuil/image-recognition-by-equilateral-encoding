@@ -26,8 +26,10 @@ public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
     public void setOriginal(BufferedImage original) {
         m_original = ImageUtils.removeTransparency(original);
 
-        m_downScaledGrayscale = ImageUtils.convertToBufferedImage(ImageUtils.fitImage(original, ControllerIREE.getInstance().getMaximumImgWidth(), ControllerIREE.getInstance().getMaximumImgHeight(),
+        m_downScaledGrayscale = ImageUtils.convertToBufferedImage(original.getScaledInstance(ControllerIREE.getInstance().getMaximumImgWidth(),
+            ControllerIREE.getInstance().getMaximumImgHeight(),
             Image.SCALE_FAST));
+        
         ImageUtils.convertToGrayscaleRGB(m_downScaledGrayscale);
 
         modelChanged(this);

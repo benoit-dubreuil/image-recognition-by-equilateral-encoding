@@ -32,6 +32,7 @@ public class ImageForIREE extends Observable<ImageForIREE> implements IObserver<
             }
 
             m_equilateralEncodingMatrix = computeEquilateralEncoding(pixelCount);
+            modelChanged(this);
         }
     }
 
