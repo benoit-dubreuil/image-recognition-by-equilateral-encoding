@@ -1,5 +1,6 @@
 package org.benoitdubreuil.iree.gui;
 
+import org.benoitdubreuil.iree.model.ImageForIREE;
 import org.benoitdubreuil.iree.pattern.observer.IObserver;
 import org.benoitdubreuil.iree.utils.ImageUtils;
 
@@ -13,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
-public class MainWindow extends JFrame implements IObserver<ImageForIREEGUI> {
+public class MainWindow extends JFrame implements IObserver<Object> {
 
     private static final String TITLE = "Image Recognition by Equilateral Encoding";
     private static final int IMAGE_BORDER_SIZE = 10;
@@ -31,17 +32,17 @@ public class MainWindow extends JFrame implements IObserver<ImageForIREEGUI> {
     private ImageForIREEGUI m_imageToCompare;
     private ImageForIREEGUI m_referenceImage;
 
-    public MainWindow() throws HeadlessException {
-        initializeVars();
+    public MainWindow(ImageForIREEGUI imageToCompare, ImageForIREEGUI referenceImage) throws HeadlessException {
+        initializeVars(imageToCompare, referenceImage);
         loadConfiguration();
     }
 
-    private void initializeVars() {
-        m_imageToCompare = new ImageForIREEGUI();
-        m_referenceImage = new ImageForIREEGUI();
+    private void initializeVars(ImageForIREEGUI imageToCompare, ImageForIREEGUI referenceImage) {
+        m_imageToCompare = imageToCompare;
+        m_referenceImage = referenceImage;
 
-        m_imageToCompare.addObserver(this);
-        m_referenceImage.addObserver(this);
+        m_imageToCompare.addObserver((IObserver) this);
+        m_referenceImage.addObserver((IObserver) this);
     }
 
     private void loadConfiguration() {
@@ -175,14 +176,22 @@ public class MainWindow extends JFrame implements IObserver<ImageForIREEGUI> {
     }
 
     @Override
-    public void observableChanged(ImageForIREEGUI newValue) {
-        if (newValue == m_imageToCompare) {
-            m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getOriginal(), m_imageToCompare_label)));
-            m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getDownScaledGrayscale(), m_downScaledImageToCompare_label)));
+    public void observableChanged(Object newValue) {
+        if (newValue instanceof ImageForIREEGUI) {
+
+            ImageForIREEGUI newValueCasted = (ImageForIREEGUI) newValue;
+
+            if (newValue == m_imageToCompare) {
+                m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_imageToCompare_label)));
+                m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaledGrayscale(), m_downScaledImageToCompare_label)));
+            }
+            else if (newValue == m_referenceImage) {
+                m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_referenceImage_label)));
+                m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaledGrayscale(), m_downScaledReferenceImage_label)));
+            }
         }
-        else if (newValue == m_referenceImage) {
-            m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getOriginal(), m_referenceImage_label)));
-            m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValue.getDownScaledGrayscale(), m_downScaledReferenceImage_label)));
+        else if (newValue instanceof ImageForIREE) {
+            ImageForIREE newValueCasted = (ImageForIREE) newValue;
         }
     }
 }

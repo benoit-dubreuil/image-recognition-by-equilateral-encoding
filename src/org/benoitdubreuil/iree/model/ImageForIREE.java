@@ -1,6 +1,10 @@
 package org.benoitdubreuil.iree.model;
 
-public class ImageForIREE {
+import org.benoitdubreuil.iree.gui.ImageForIREEGUI;
+import org.benoitdubreuil.iree.pattern.observer.IObserver;
+import org.benoitdubreuil.iree.pattern.observer.Observable;
+
+public class ImageForIREE extends Observable<ImageForIREE> implements IObserver<ImageForIREEGUI> {
 
     public static final int MAXIMUM_WIDTH = 32;
     public static final int MAXIMUM_HEIGHT = 32;
@@ -8,5 +12,8 @@ public class ImageForIREE {
 
     private float[] m_equilateralEncoding;
 
+    @Override
+    public void observableChanged(ImageForIREEGUI newValue) {
 
+    }
 }
