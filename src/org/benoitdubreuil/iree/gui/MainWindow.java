@@ -190,7 +190,7 @@ public class MainWindow extends JFrame implements IObserver<Object> {
                 m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaledGrayscale(), m_downScaledReferenceImage_label)));
             }
         }
-        else if (newValue instanceof ImageForIREE) {
+        else if (newValue instanceof ImageForIREE && m_imageToCompare.getDownScaledGrayscale() != null && m_referenceImage.getDownScaledGrayscale() != null) {
             ImageForIREE newValueCasted = (ImageForIREE) newValue;
         }
     }
