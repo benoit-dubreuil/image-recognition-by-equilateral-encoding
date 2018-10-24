@@ -12,7 +12,7 @@ public class ControllerIREE {
     private boolean m_hasStarted;
     private MainWindow m_mainWindow;
 
-    public ControllerIREE() {
+    private ControllerIREE() {
     }
 
     public static ControllerIREE getInstance() {
