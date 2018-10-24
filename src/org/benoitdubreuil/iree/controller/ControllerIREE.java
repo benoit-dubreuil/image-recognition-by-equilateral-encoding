@@ -49,6 +49,22 @@ public class ControllerIREE {
         }
     }
 
+    public boolean hasStarted() {
+        return m_hasStarted;
+    }
+
+    public MainWindow getMainWindow() {
+        return m_mainWindow;
+    }
+
+    public ImageForIREE getImageToCompareData() {
+        return m_imageToCompareData;
+    }
+
+    public ImageForIREE getReferenceImageData() {
+        return m_referenceImageData;
+    }
+
     public int getMaximumImgWidth() {
         return ImageForIREE.MAXIMUM_WIDTH;
     }
