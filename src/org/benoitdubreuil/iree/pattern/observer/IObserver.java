@@ -1,4 +1,4 @@
-package org.benoitdubreuil.iree.pattern;
+package org.benoitdubreuil.iree.pattern.observer;
 
 /**
  * Interface that for the observer pattern, which is useful for the MVC architecture.

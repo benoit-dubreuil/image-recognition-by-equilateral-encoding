@@ -1,6 +1,7 @@
 package org.benoitdubreuil.iree.gui;
 
-import org.benoitdubreuil.iree.pattern.IObserver;
+import org.benoitdubreuil.iree.pattern.observer.IObserver;
+import org.benoitdubreuil.iree.utils.ImageUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -170,19 +171,7 @@ public class MainWindow extends JFrame implements IObserver<ImageForIREEGUI> {
     }
 
     private Image createImageFitToLabel(BufferedImage image, JLabel label) {
-        float imageAspectRatio = image.getWidth() / (float) image.getHeight();
-        float labelAspectRatio = label.getWidth() / (float) label.getHeight();
-
-        Image resizedImage;
-
-        if (imageAspectRatio >= labelAspectRatio) {
-            resizedImage = image.getScaledInstance(label.getWidth(), (int) (label.getWidth() * imageAspectRatio), Image.SCALE_SMOOTH);
-        }
-        else {
-            resizedImage = image.getScaledInstance((int) (label.getHeight() * imageAspectRatio), label.getHeight(), Image.SCALE_SMOOTH);
-        }
-
-        return resizedImage;
+        return ImageUtils.fitImage(image, label.getWidth(), label.getHeight(), Image.SCALE_FAST);
     }
 
     @Override

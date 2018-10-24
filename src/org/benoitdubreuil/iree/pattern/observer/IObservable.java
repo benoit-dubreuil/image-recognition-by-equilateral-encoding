@@ -1,4 +1,4 @@
-package org.benoitdubreuil.iree.pattern;
+package org.benoitdubreuil.iree.pattern.observer;
 
 /**
  * The parent class for the models in the Observer design pattern.

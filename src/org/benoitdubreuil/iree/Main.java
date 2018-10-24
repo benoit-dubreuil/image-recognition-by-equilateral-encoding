@@ -1,10 +1,10 @@
 package org.benoitdubreuil.iree;
 
-import org.benoitdubreuil.iree.gui.MainWindow;
+import org.benoitdubreuil.iree.controller.ControllerIREE;
 
 public class Main {
 
     public static void main(String[] args) {
-        MainWindow window = new MainWindow();
+        ControllerIREE.getInstance().start();
     }
 }

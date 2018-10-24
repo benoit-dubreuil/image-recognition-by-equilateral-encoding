@@ -1,4 +1,4 @@
-package org.benoitdubreuil.iree.pattern;
+package org.benoitdubreuil.iree.pattern.observer;
 
 import java.util.HashSet;
 import java.util.Set;
