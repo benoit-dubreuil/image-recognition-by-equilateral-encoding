@@ -1,8 +1,10 @@
 package org.benoitdubreuil.iree.controller;
 
-import org.benoitdubreuil.iree.gui.ImageForIREEGUI;
+import org.benoitdubreuil.iree.gui.ImageGUIData;
 import org.benoitdubreuil.iree.gui.MainWindow;
-import org.benoitdubreuil.iree.model.ImageForIREE;
+import org.benoitdubreuil.iree.model.EquilateralEncodingCategory;
+import org.benoitdubreuil.iree.model.EquilateralEncodingTable;
+import org.benoitdubreuil.iree.model.ImageData;
 import org.benoitdubreuil.iree.pattern.observer.IObserver;
 
 import javax.swing.*;
@@ -13,8 +15,9 @@ public class ControllerIREE {
 
     private boolean m_hasStarted;
     private MainWindow m_mainWindow;
-    private ImageForIREE m_imageToCompareData;
-    private ImageForIREE m_referenceImageData;
+    private EquilateralEncodingTable m_encodingTable;
+    private ImageData m_imageToCompareData;
+    private ImageData m_referenceImageData;
 
     private ControllerIREE() {
     }
@@ -31,11 +34,12 @@ public class ControllerIREE {
         if (!m_hasStarted) {
             m_hasStarted = true;
 
-            m_imageToCompareData = new ImageForIREE();
-            m_referenceImageData = new ImageForIREE();
+            m_encodingTable = new EquilateralEncodingTable(EquilateralEncodingCategory.size(), 0, 1);
+            m_imageToCompareData = new ImageData();
+            m_referenceImageData = new ImageData();
 
-            ImageForIREEGUI imageToCompare = new ImageForIREEGUI();
-            ImageForIREEGUI referenceImage = new ImageForIREEGUI();
+            ImageGUIData imageToCompare = new ImageGUIData();
+            ImageGUIData referenceImage = new ImageGUIData();
 
             imageToCompare.addObserver(m_imageToCompareData);
             referenceImage.addObserver(m_referenceImageData);
@@ -46,6 +50,29 @@ public class ControllerIREE {
                 m_imageToCompareData.addObserver((IObserver) m_mainWindow);
                 m_referenceImageData.addObserver((IObserver) m_mainWindow);
             });
+
+            // Regular Exception
+            Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+
+            try {
+                // EDT Exception
+                SwingUtilities.invokeAndWait(new Runnable() {
+
+                    public void run() {
+                        // We are in the event dispatching thread
+                        Thread.currentThread().setUncaughtExceptionHandler(new ExceptionHandler());
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+
+        public void uncaughtException(Thread thread, Throwable thrown) {
+            thrown.printStackTrace();
         }
     }
 
@@ -57,23 +84,23 @@ public class ControllerIREE {
         return m_mainWindow;
     }
 
-    public ImageForIREE getImageToCompareData() {
+    public ImageData getImageToCompareData() {
         return m_imageToCompareData;
     }
 
-    public ImageForIREE getReferenceImageData() {
+    public ImageData getReferenceImageData() {
         return m_referenceImageData;
     }
 
     public int getMaximumImgWidth() {
-        return ImageForIREE.MAXIMUM_WIDTH;
+        return 32;
     }
 
     public int getMaximumImgHeight() {
-        return ImageForIREE.MAXIMUM_HEIGHT;
+        return 32;
     }
 
-    public float getMaximumImgDimensionsAspectRation() {
-        return ImageForIREE.MAXIMUM_DIMENSIONS_ASPECT_RATIO;
+    public EquilateralEncodingTable getEncodingTable() {
+        return m_encodingTable;
     }
 }

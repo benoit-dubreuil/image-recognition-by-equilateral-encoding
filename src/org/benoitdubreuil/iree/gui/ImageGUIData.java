@@ -7,15 +7,15 @@ import org.benoitdubreuil.iree.utils.ImageUtils;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
+public class ImageGUIData extends Observable<ImageGUIData> {
 
     private BufferedImage m_original;
-    private BufferedImage m_downScaledGrayscale;
+    private BufferedImage m_downScaled;
 
-    public ImageForIREEGUI() {
+    public ImageGUIData() {
     }
 
-    public ImageForIREEGUI(BufferedImage original) {
+    public ImageGUIData(BufferedImage original) {
         setOriginal(original);
     }
 
@@ -26,16 +26,15 @@ public class ImageForIREEGUI extends Observable<ImageForIREEGUI> {
     public void setOriginal(BufferedImage original) {
         m_original = ImageUtils.removeTransparency(original);
 
-        m_downScaledGrayscale = ImageUtils.convertToBufferedImage(original.getScaledInstance(ControllerIREE.getInstance().getMaximumImgWidth(),
+        m_downScaled = ImageUtils.convertToBufferedImage(ImageUtils.fitImage(original,
+            ControllerIREE.getInstance().getMaximumImgWidth(),
             ControllerIREE.getInstance().getMaximumImgHeight(),
             Image.SCALE_FAST));
-        
-        ImageUtils.convertToGrayscaleRGB(m_downScaledGrayscale);
 
         modelChanged(this);
     }
 
-    public BufferedImage getDownScaledGrayscale() {
-        return m_downScaledGrayscale;
+    public BufferedImage getDownScaled() {
+        return m_downScaled;
     }
 }

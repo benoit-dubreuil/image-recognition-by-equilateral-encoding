@@ -1,6 +1,8 @@
 package org.benoitdubreuil.iree.gui;
 
-import org.benoitdubreuil.iree.model.ImageForIREE;
+import org.benoitdubreuil.iree.controller.ControllerIREE;
+import org.benoitdubreuil.iree.model.ImageData;
+import org.benoitdubreuil.iree.model.ImageDataRecognition;
 import org.benoitdubreuil.iree.pattern.observer.IObserver;
 import org.benoitdubreuil.iree.utils.ImageUtils;
 
@@ -12,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.function.BiConsumer;
 
 public class MainWindow extends JFrame implements IObserver<Object> {
@@ -29,15 +32,15 @@ public class MainWindow extends JFrame implements IObserver<Object> {
 
     JFileChooser m_fileChooser;
 
-    private ImageForIREEGUI m_imageToCompare;
-    private ImageForIREEGUI m_referenceImage;
+    private ImageGUIData m_imageToCompare;
+    private ImageGUIData m_referenceImage;
 
-    public MainWindow(ImageForIREEGUI imageToCompare, ImageForIREEGUI referenceImage) throws HeadlessException {
+    public MainWindow(ImageGUIData imageToCompare, ImageGUIData referenceImage) throws HeadlessException {
         initializeVars(imageToCompare, referenceImage);
         loadConfiguration();
     }
 
-    private void initializeVars(ImageForIREEGUI imageToCompare, ImageForIREEGUI referenceImage) {
+    private void initializeVars(ImageGUIData imageToCompare, ImageGUIData referenceImage) {
         m_imageToCompare = imageToCompare;
         m_referenceImage = referenceImage;
 
@@ -113,7 +116,7 @@ public class MainWindow extends JFrame implements IObserver<Object> {
         JMenuItem loadRefImgMenuItem = new JMenuItem("Load Ref Image");
         loadRefImgMenuItem.setToolTipText("Load reference image");
 
-        BiConsumer<ActionEvent, ImageForIREEGUI> loadImgAction = (ActionEvent event, ImageForIREEGUI image) -> {
+        BiConsumer<ActionEvent, ImageGUIData> loadImgAction = (ActionEvent event, ImageGUIData image) -> {
             int result = m_fileChooser.showOpenDialog(this);
 
             if (result == JFileChooser.APPROVE_OPTION) {
@@ -177,21 +180,26 @@ public class MainWindow extends JFrame implements IObserver<Object> {
 
     @Override
     public void observableChanged(Object newValue) {
-        if (newValue instanceof ImageForIREEGUI) {
+        if (newValue instanceof ImageGUIData) {
 
-            ImageForIREEGUI newValueCasted = (ImageForIREEGUI) newValue;
+            ImageGUIData newValueCasted = (ImageGUIData) newValue;
 
             if (newValue == m_imageToCompare) {
                 m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_imageToCompare_label)));
-                m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaledGrayscale(), m_downScaledImageToCompare_label)));
+                m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledImageToCompare_label)));
             }
             else if (newValue == m_referenceImage) {
                 m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_referenceImage_label)));
-                m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaledGrayscale(), m_downScaledReferenceImage_label)));
+                m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledReferenceImage_label)));
             }
         }
-        else if (newValue instanceof ImageForIREE && m_imageToCompare.getDownScaledGrayscale() != null && m_referenceImage.getDownScaledGrayscale() != null) {
-            ImageForIREE newValueCasted = (ImageForIREE) newValue;
+        else if (newValue instanceof ImageData && m_imageToCompare.getDownScaled() != null && m_referenceImage.getDownScaled() != null) {
+            ControllerIREE controller = ControllerIREE.getInstance();
+
+            double meanDistance = ImageDataRecognition.compareImages(controller.getImageToCompareData(), controller.getReferenceImageData());
+
+            DecimalFormat decimalFormat = new DecimalFormat("0.00");
+            m_comparisonValue_label.setText(decimalFormat.format(meanDistance * 100));
         }
     }
 }
