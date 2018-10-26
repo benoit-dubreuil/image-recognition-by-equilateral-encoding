@@ -34,7 +34,7 @@ public class ControllerIREE {
         if (!m_hasStarted) {
             m_hasStarted = true;
 
-            m_encodingTable = new EquilateralEncodingTable(EquilateralEncodingCategory.size(), 0, 1);
+            m_encodingTable = new EquilateralEncodingTable(EquilateralEncodingCategory.size(), -1, 1);
             m_imageToCompareData = new ImageData();
             m_referenceImageData = new ImageData();
 
@@ -50,22 +50,6 @@ public class ControllerIREE {
                 m_imageToCompareData.addObserver((IObserver) m_mainWindow);
                 m_referenceImageData.addObserver((IObserver) m_mainWindow);
             });
-
-            // Regular Exception
-            Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
-
-            try {
-                // EDT Exception
-                SwingUtilities.invokeAndWait(new Runnable() {
-
-                    public void run() {
-                        // We are in the event dispatching thread
-                        Thread.currentThread().setUncaughtExceptionHandler(new ExceptionHandler());
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
