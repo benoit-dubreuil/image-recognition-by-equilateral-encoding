@@ -5,6 +5,7 @@ import org.benoitdubreuil.iree.gui.ImageGUIData;
 import org.benoitdubreuil.iree.pattern.observer.IObserver;
 import org.benoitdubreuil.iree.pattern.observer.Observable;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageData extends Observable<ImageData> implements IObserver<ImageGUIData> {
@@ -26,7 +27,7 @@ public class ImageData extends Observable<ImageData> implements IObserver<ImageG
 
     private void encodePixelData(ImageGUIData imageGUIData) {
         double[][] categoryDimensionMatrix = ControllerIREE.getInstance().getEncodingTable().getCategoryDimensionMatrix();
-        double[] normalizedPixel = new double[EquilateralEncodingCategory.size()];
+        float[] hsb = new float[EquilateralEncodingCategory.size()];
         BufferedImage image = imageGUIData.getDownScaled();
         int width = image.getWidth();
         int height = image.getHeight();
@@ -41,19 +42,17 @@ public class ImageData extends Observable<ImageData> implements IObserver<ImageG
                 double[] coordinates = m_encodedPixelData[x * height + y];
                 int orignalPixel = image.getRGB(x, height - 1 - y);
 
-                normalizedPixel[EquilateralEncodingCategory.R.ordinal()] = EquilateralEncodingCategory.normalizeDimension((orignalPixel >> 16) & 0xff);
-                normalizedPixel[EquilateralEncodingCategory.G.ordinal()] = EquilateralEncodingCategory.normalizeDimension((orignalPixel >> 8) & 0xff);
-                normalizedPixel[EquilateralEncodingCategory.B.ordinal()] = EquilateralEncodingCategory.normalizeDimension(orignalPixel & 0xff);
+                int r = (orignalPixel >> 16) & 0xff;
+                int g = (orignalPixel >> 8) & 0xff;
+                int b = orignalPixel & 0xff;
 
-                normalizedPixel[EquilateralEncodingCategory.GRAYSCALE.ordinal()] = EquilateralEncodingCategory.normalizeDimension(
-                    (normalizedPixel[EquilateralEncodingCategory.R.ordinal()] + normalizedPixel[EquilateralEncodingCategory.G.ordinal()]
-                        + normalizedPixel[EquilateralEncodingCategory.B.ordinal()]) / 3.0);
+                Color.RGBtoHSB(r, g, b, hsb);
 
                 for (int dimension = 0; dimension < dimensionCount; ++dimension) {
                     double coordinate = 0;
 
                     for (int category = 0; category < EquilateralEncodingCategory.size(); ++category) {
-                        coordinate += normalizedPixel[category] * categoryDimensionMatrix[category][dimension];
+                        coordinate += hsb[category] * categoryDimensionMatrix[category][dimension];
                     }
 
                     coordinates[dimension] = coordinate;

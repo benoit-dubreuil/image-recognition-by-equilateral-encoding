@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class MainWindow extends JFrame implements IObserver<Object> {
     public MainWindow(ImageGUIData imageToCompare, ImageGUIData referenceImage) throws HeadlessException {
         initializeVars(imageToCompare, referenceImage);
         loadConfiguration();
+        initializeListeners();
     }
 
     private void initializeVars(ImageGUIData imageToCompare, ImageGUIData referenceImage) {
@@ -167,6 +170,16 @@ public class MainWindow extends JFrame implements IObserver<Object> {
         centerPanel.add(m_downScaledReferenceImage_label);
     }
 
+    private void initializeListeners() {
+        addComponentListener(new ComponentAdapter() {
+
+            public void componentResized(ComponentEvent componentEvent) {
+                observableChanged(m_imageToCompare);
+                observableChanged(m_referenceImage);
+            }
+        });
+    }
+
     private JLabel createImageLabel(int borderSize) {
         JLabel imagePanel = new JLabel();
         imagePanel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize)); // Use grid layout hgap et vgap instead?
@@ -180,23 +193,39 @@ public class MainWindow extends JFrame implements IObserver<Object> {
 
     @Override
     public void observableChanged(Object newValue) {
+        if (newValue == null) {
+            return;
+        }
+
         if (newValue instanceof ImageGUIData) {
 
             ImageGUIData newValueCasted = (ImageGUIData) newValue;
 
             if (newValue == m_imageToCompare) {
-                m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_imageToCompare_label)));
-                m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledImageToCompare_label)));
+                if (newValueCasted.getOriginal() != null) {
+                    m_imageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_imageToCompare_label)));
+                    m_downScaledImageToCompare_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledImageToCompare_label)));
+                }
+                else {
+                    m_imageToCompare_label.setIcon(null);
+                    m_downScaledImageToCompare_label.setIcon(null);
+                }
             }
             else if (newValue == m_referenceImage) {
-                m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_referenceImage_label)));
-                m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledReferenceImage_label)));
+                if (newValueCasted.getOriginal() != null) {
+                    m_referenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getOriginal(), m_referenceImage_label)));
+                    m_downScaledReferenceImage_label.setIcon(new ImageIcon(createImageFitToLabel(newValueCasted.getDownScaled(), m_downScaledReferenceImage_label)));
+                }
+                else {
+                    m_referenceImage_label.setIcon(null);
+                    m_downScaledReferenceImage_label.setIcon(null);
+                }
             }
         }
         else if (newValue instanceof ImageData && m_imageToCompare.getDownScaled() != null && m_referenceImage.getDownScaled() != null) {
             ControllerIREE controller = ControllerIREE.getInstance();
 
-            double meanDistance = ImageDataRecognition.compareImages(controller.getImageToCompareData(), controller.getReferenceImageData());
+            double meanDistance = 1 - ImageDataRecognition.compareImages(controller.getImageToCompareData(), controller.getReferenceImageData());
 
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
             m_comparisonValue_label.setText(decimalFormat.format(meanDistance * 100));

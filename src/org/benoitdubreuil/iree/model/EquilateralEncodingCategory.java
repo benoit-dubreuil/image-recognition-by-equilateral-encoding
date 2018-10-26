@@ -1,13 +1,12 @@
 package org.benoitdubreuil.iree.model;
 
 public enum EquilateralEncodingCategory {
-    R,
-    G,
-    B,
-    GRAYSCALE;
+    H,
+    S,
+    B;
 
     private static final double MIN_VALUE = 0;
-    private static final double MAX_VALUE = 255;
+    private static final double MAX_VALUE = 1;
     private static final double RANGE = MAX_VALUE - MIN_VALUE;
     private static final int SIZE = EquilateralEncodingCategory.values().length;
     public static final double[] FILLING_EQUILATERAL_COORDINATES = {0, 0, 1};
