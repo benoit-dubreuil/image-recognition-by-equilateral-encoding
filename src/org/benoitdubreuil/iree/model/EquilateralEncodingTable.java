@@ -1,10 +1,6 @@
 package org.benoitdubreuil.iree.model;
 
-import org.benoitdubreuil.iree.gui.ImageGUIData;
-import org.benoitdubreuil.iree.pattern.observer.IObserver;
-import org.benoitdubreuil.iree.pattern.observer.Observable;
-
-import java.util.Arrays;
+import org.benoitdubreuil.iree.utils.MathUtils;
 
 /**
  * The image data for the image recognition by equilateral encoding.
@@ -24,7 +20,8 @@ public class EquilateralEncodingTable {
     private int m_dimensionCount;
     private double m_lowestValue;
     private double m_highestValue;
-    private double[][] m_categoryDimensionMatrix;
+    private double m_valueRange;
+    private double[][] m_categoriesCoordinates;
 
     public EquilateralEncodingTable(int categoryCount, double lowestValue, double highestValue) {
         if (categoryCount < MIN_CATEGORIES_FOR_ENCODING) {
@@ -35,7 +32,8 @@ public class EquilateralEncodingTable {
         this.m_dimensionCount = computeDimensionCount(categoryCount);
         this.m_lowestValue = lowestValue;
         this.m_highestValue = highestValue;
-        this.m_categoryDimensionMatrix = computeEquilateralEncodingTable();
+        this.m_valueRange = highestValue - lowestValue;
+        this.m_categoriesCoordinates = computeEquilateralEncodingTable();
     }
 
     /**
@@ -46,7 +44,7 @@ public class EquilateralEncodingTable {
      * @return The equilaterally encoded coordinates.
      */
     public double[] encode(int equilateralCoordsIndex) {
-        return m_categoryDimensionMatrix[equilateralCoordsIndex];
+        return m_categoriesCoordinates[equilateralCoordsIndex];
     }
 
     /**
@@ -61,7 +59,7 @@ public class EquilateralEncodingTable {
         double closestDistance = Double.POSITIVE_INFINITY;
         int closestEquilateralCoordsIndex = -1;
 
-        for (int i = 0; i < m_categoryDimensionMatrix.length; ++i) {
+        for (int i = 0; i < m_categoriesCoordinates.length; ++i) {
 
             double dist = computeDistance(coordinates, i);
 
@@ -83,25 +81,7 @@ public class EquilateralEncodingTable {
      * @return The Euclidean distance between the two vectors.
      */
     public double computeDistance(double[] coordinates, int equilateralCoordsIndex) {
-        return computeDistance(coordinates, m_categoryDimensionMatrix[equilateralCoordsIndex]);
-    }
-
-    /**
-     * Computes the Euclidean distance between the supplied vectors.
-     *
-     * @param lhsCoordinates Coordinates of the first n-dimensional vector.
-     * @param rhsCoordinates Coordinates of the second n-dimensional vector.
-     *
-     * @return The Euclidean distance between the two vectors.
-     */
-    public static double computeDistance(double[] lhsCoordinates, double[] rhsCoordinates) {
-        double result = 0;
-
-        for (int i = 0; i < rhsCoordinates.length; ++i) {
-            result += Math.pow(lhsCoordinates[i] - rhsCoordinates[i], 2);
-        }
-
-        return Math.sqrt(result);
+        return MathUtils.computeDistance(coordinates, m_categoriesCoordinates[equilateralCoordsIndex]);
     }
 
     /**
@@ -121,19 +101,19 @@ public class EquilateralEncodingTable {
         if (m_categoryCount > 2) {
             for (int dimension = 2; dimension < m_categoryCount; ++dimension) {
                 // scale the matrix so far
-                negativeReciprocalOfN = dimension;
-                scalingFactor = Math.sqrt(negativeReciprocalOfN * negativeReciprocalOfN - 1.0) / negativeReciprocalOfN;
+                scalingFactor = dimension;
+                negativeReciprocalOfN = Math.sqrt(scalingFactor * scalingFactor - 1.0) / scalingFactor;
 
                 for (int coordinate = 0; coordinate < dimension; ++coordinate) {
                     for (int oldDimension = 0; oldDimension < dimension - 1; ++oldDimension) {
-                        matrix[coordinate][oldDimension] *= scalingFactor;
+                        matrix[coordinate][oldDimension] *= negativeReciprocalOfN;
                     }
                 }
 
-                negativeReciprocalOfN = -1.0 / negativeReciprocalOfN;
+                scalingFactor = -1.0 / scalingFactor;
 
                 for (int coordinate = 0; coordinate < dimension; ++coordinate) {
-                    matrix[coordinate][dimension - 1] = negativeReciprocalOfN;
+                    matrix[coordinate][dimension - 1] = scalingFactor;
                 }
 
                 for (int coordinate = 0; coordinate < dimension - 1; ++coordinate) {
@@ -149,90 +129,13 @@ public class EquilateralEncodingTable {
                         double min = -1;
                         double max = 1;
 
-                        matrix[row][col] = ((matrix[row][col] - min) / (max - min)) * (m_highestValue - m_lowestValue) + m_lowestValue;
+                        matrix[row][col] = ((matrix[row][col] - min) / (max - min)) * m_valueRange + m_lowestValue;
                     }
                 }
             }
         }
 
         return matrix;
-    }
-
-    /**
-     * Normalizes the supplied coordinates.
-     *
-     * @param coordinates The coordinates to normalize.
-     *
-     * @return The same array, but normalized.
-     */
-    public static double[] normalizeCoordinates(double[] coordinates) {
-
-        double squaredLength = 0;
-
-        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
-            squaredLength += coordinates[dimension] * coordinates[dimension];
-        }
-
-        if (squaredLength != 1.0 && squaredLength != 0.0) {
-            double reciprocalLength = 1.0 / Math.sqrt(squaredLength);
-
-            for (int dimension = 0; dimension < coordinates.length; ++dimension) {
-                coordinates[dimension] *= reciprocalLength;
-            }
-        }
-
-        return coordinates;
-    }
-
-    /**
-     * Negates the coordinates.
-     *
-     * @param coordinates The coordinates to negate.
-     *
-     * @return The same array, but each coordinate negated.
-     */
-    public static double[] negateCoordinates(double[] coordinates) {
-
-        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
-            coordinates[dimension] = -coordinates[dimension];
-        }
-
-        return coordinates;
-    }
-
-    /**
-     * Multiplies the coordinates by a scalar.
-     *
-     * @param coordinates The coordinates to multiply.
-     * @param scalar      The scalar by which to multiply the coordinates.
-     *
-     * @return The same array, but each coordinate multiplied by the scalar.
-     */
-    public static double[] multCoordinates(double[] coordinates, double scalar) {
-
-        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
-            coordinates[dimension] *= scalar;
-        }
-
-        return coordinates;
-    }
-
-    /**
-     * Computes the dot product of the two supplied points.
-     *
-     * @param lhsCoords The first point.
-     * @param rhsCoords The second point.
-     *
-     * @return The dot product of the two points.
-     */
-    public static double dotProductCoordinates(double[] lhsCoords, double[] rhsCoords) {
-        double dotResult = 0;
-
-        for (int dimension = 0; dimension < lhsCoords.length; ++dimension) {
-            dotResult += lhsCoords[dimension] * rhsCoords[dimension];
-        }
-
-        return dotResult;
     }
 
     public static int computeDimensionCount(int categoryCount) {
@@ -255,7 +158,11 @@ public class EquilateralEncodingTable {
         return m_highestValue;
     }
 
-    public double[][] getCategoryDimensionMatrix() {
-        return m_categoryDimensionMatrix;
+    public double getValueRange() {
+        return m_valueRange;
+    }
+
+    public double[][] getCategoriesCoordinates() {
+        return m_categoriesCoordinates;
     }
 }
