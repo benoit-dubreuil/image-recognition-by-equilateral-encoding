@@ -26,7 +26,7 @@ public class ImageGUIData extends Observable<ImageGUIData> {
     public void setOriginal(BufferedImage original) {
         m_original = ImageUtils.removeTransparency(original);
 
-        m_downScaled = ImageUtils.convertToBufferedImage(ImageUtils.fitImage(original,
+        m_downScaled = ImageUtils.convertToBufferedImage(ImageUtils.fitImage(m_original,
             ControllerIREE.getInstance().getMaximumImgWidth(),
             ControllerIREE.getInstance().getMaximumImgHeight(),
             Image.SCALE_FAST));
