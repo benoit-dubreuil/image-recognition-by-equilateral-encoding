@@ -1,6 +1,7 @@
 package org.benoitdubreuil.iree.model;
 
 import org.benoitdubreuil.iree.controller.ControllerIREE;
+import org.benoitdubreuil.iree.utils.MathUtils;
 
 public final class ImageDataRecognition {
 
@@ -22,27 +23,33 @@ public final class ImageDataRecognition {
 
             EquilateralEncodingTable table = ControllerIREE.getInstance().getEncodingTable();
             int maxPixelCount = Math.max(lhs.getPixelCount(), rhs.getPixelCount());
+            double emptyPixelMeanValue = 1.0 / maxPixelCount;
 
             for (int pixel = 0; pixel < maxPixelCount; ++pixel) {
 
-                double[] lhsCoordinates;
-                double[] rhsCoordinates;
+                double[] lhsVector;
+                double[] rhsVector;
 
                 if (pixel < lhs.getPixelCount()) {
-                    lhsCoordinates = lhsEncodedPixelData[pixel];
+                    lhsVector = lhsEncodedPixelData[pixel];
                 }
                 else {
-                    lhsCoordinates = EquilateralEncodingCategory.FILLING_EQUILATERAL_COORDINATES;
+                    meanDistance += emptyPixelMeanValue;
+                    continue;
                 }
 
                 if (pixel < rhs.getPixelCount()) {
-                    rhsCoordinates = rhsEncodedPixelData[pixel];
+                    rhsVector = rhsEncodedPixelData[pixel];
                 }
                 else {
-                    rhsCoordinates = EquilateralEncodingCategory.FILLING_EQUILATERAL_COORDINATES;
+                    meanDistance += emptyPixelMeanValue;
+                    continue;
                 }
 
-                meanDistance += EquilateralEncodingTable.computeDistance(lhsCoordinates, rhsCoordinates) / maxPixelCount;
+                double rhsDotLhs = MathUtils.dotProductVector(rhsVector, lhsVector);
+                double[] rhsProjectedOntoLhs = MathUtils.multVector(lhsVector.clone(), rhsDotLhs);
+
+                meanDistance += MathUtils.computeDistance(lhsVector, rhsProjectedOntoLhs) / table.getValueRange() / maxPixelCount;
             }
         }
 
