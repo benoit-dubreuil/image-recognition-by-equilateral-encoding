@@ -69,6 +69,21 @@ public final class ImageUtils {
         g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
 
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
+
+                int pixel = copy.getRGB(x, y);
+
+                int r = (pixel >> 16) & 0xff;
+                int g = (pixel >> 8) & 0xff;
+                int b = pixel & 0xff;
+
+                int opaquePixel = (0xFF << 24) | (r << 16) | (g << 8) | b;
+
+                copy.setRGB(x, y, opaquePixel);
+            }
+        }
+
         return copy;
     }
 
