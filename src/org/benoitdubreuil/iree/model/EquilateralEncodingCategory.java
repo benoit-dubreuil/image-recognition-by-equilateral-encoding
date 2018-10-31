@@ -1,15 +1,25 @@
 package org.benoitdubreuil.iree.model;
 
-public enum EquilateralEncodingCategory {
-    H,
-    S,
-    B;
+import java.awt.*;
 
-    private static final double MIN_VALUE = 0;
+public enum EquilateralEncodingCategory {
+    RED(Color.RED),
+    GREEN(Color.GREEN),
+    BLUE(Color.BLUE),
+    WHITE(Color.WHITE),
+    BLACK(Color.BLACK);
+
+    private static final double MIN_VALUE = -1;
     private static final double MAX_VALUE = 1;
     private static final double RANGE = MAX_VALUE - MIN_VALUE;
     private static final int SIZE = EquilateralEncodingCategory.values().length;
-    public static final double[] FILLING_EQUILATERAL_COORDINATES = {0, 0, 1};
+    public static final double[] FILLING_EQUILATERAL_COORDINATES = {0, 0, 0, 1};
+
+    private final Color m_color;
+
+    EquilateralEncodingCategory(Color color) {
+        m_color = color;
+    }
 
     public static double getMinValue() {
         return MIN_VALUE;
@@ -29,5 +39,9 @@ public enum EquilateralEncodingCategory {
 
     public static int size() {
         return SIZE;
+    }
+
+    public Color getColor() {
+        return m_color;
     }
 }

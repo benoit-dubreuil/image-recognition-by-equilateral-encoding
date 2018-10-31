@@ -34,7 +34,10 @@ public class ControllerIREE {
         if (!m_hasStarted) {
             m_hasStarted = true;
 
-            m_encodingTable = new EquilateralEncodingTable(EquilateralEncodingCategory.size(), -1, 1);
+            m_encodingTable = new EquilateralEncodingTable(EquilateralEncodingCategory.size(),
+                EquilateralEncodingCategory.getMinValue(),
+                EquilateralEncodingCategory.getMaxValue());
+
             m_imageToCompareData = new ImageData();
             m_referenceImageData = new ImageData();
 

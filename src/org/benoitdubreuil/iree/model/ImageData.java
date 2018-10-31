@@ -26,37 +26,37 @@ public class ImageData extends Observable<ImageData> implements IObserver<ImageG
     }
 
     private void encodePixelData(ImageGUIData imageGUIData) {
-        double[][] categoryDimensionMatrix = ControllerIREE.getInstance().getEncodingTable().getCategoryDimensionMatrix();
-        float[] hsb = new float[EquilateralEncodingCategory.size()];
+        EquilateralEncodingTable encodingTable = ControllerIREE.getInstance().getEncodingTable();
+        EquilateralEncodingCategory[] categories = EquilateralEncodingCategory.values();
         BufferedImage image = imageGUIData.getDownScaled();
         int width = image.getWidth();
         int height = image.getHeight();
 
-        int dimensionCount = EquilateralEncodingTable.computeDimensionCount(EquilateralEncodingCategory.size());
-
-        m_encodedPixelData = new double[width * height][dimensionCount];
+        m_encodedPixelData = new double[width * height][];
 
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
 
-                double[] coordinates = m_encodedPixelData[x * height + y];
                 int orignalPixel = image.getRGB(x, height - 1 - y);
 
                 int r = (orignalPixel >> 16) & 0xff;
                 int g = (orignalPixel >> 8) & 0xff;
                 int b = orignalPixel & 0xff;
 
-                Color.RGBtoHSB(r, g, b, hsb);
+                int minColorDistance = 255 * 3;
+                int minColorDistanceCategory = 0;
+                for (int category = 0; category < encodingTable.getCategoryCount(); ++category) {
 
-                for (int dimension = 0; dimension < dimensionCount; ++dimension) {
-                    double coordinate = 0;
+                    Color categoryColor = categories[category].getColor();
+                    int colorDistance = Math.abs(r - categoryColor.getRed()) + Math.abs(g - categoryColor.getGreen()) + Math.abs(b - categoryColor.getBlue());
 
-                    for (int category = 0; category < EquilateralEncodingCategory.size(); ++category) {
-                        coordinate += hsb[category] * categoryDimensionMatrix[category][dimension];
+                    if (colorDistance < minColorDistance) {
+                        minColorDistance = colorDistance;
+                        minColorDistanceCategory = category;
                     }
-
-                    coordinates[dimension] = coordinate;
                 }
+
+                m_encodedPixelData[x * height + y] = encodingTable.encode(minColorDistanceCategory).clone();
             }
         }
     }
