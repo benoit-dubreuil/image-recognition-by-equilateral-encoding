@@ -158,6 +158,83 @@ public class EquilateralEncodingTable {
         return matrix;
     }
 
+    /**
+     * Normalizes the supplied coordinates.
+     *
+     * @param coordinates The coordinates to normalize.
+     *
+     * @return The same array, but normalized.
+     */
+    public static double[] normalizeCoordinates(double[] coordinates) {
+
+        double squaredLength = 0;
+
+        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
+            squaredLength += coordinates[dimension] * coordinates[dimension];
+        }
+
+        if (squaredLength != 1.0 && squaredLength != 0.0) {
+            double reciprocalLength = 1.0 / Math.sqrt(squaredLength);
+
+            for (int dimension = 0; dimension < coordinates.length; ++dimension) {
+                coordinates[dimension] *= reciprocalLength;
+            }
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Negates the coordinates.
+     *
+     * @param coordinates The coordinates to negate.
+     *
+     * @return The same array, but each coordinate negated.
+     */
+    public static double[] negateCoordinates(double[] coordinates) {
+
+        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
+            coordinates[dimension] = -coordinates[dimension];
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Multiplies the coordinates by a scalar.
+     *
+     * @param coordinates The coordinates to multiply.
+     * @param scalar      The scalar by which to multiply the coordinates.
+     *
+     * @return The same array, but each coordinate multiplied by the scalar.
+     */
+    public static double[] multCoordinates(double[] coordinates, double scalar) {
+
+        for (int dimension = 0; dimension < coordinates.length; ++dimension) {
+            coordinates[dimension] *= scalar;
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Computes the dot product of the two supplied points.
+     *
+     * @param lhsCoords The first point.
+     * @param rhsCoords The second point.
+     *
+     * @return The dot product of the two points.
+     */
+    public static double dotProductCoordinates(double[] lhsCoords, double[] rhsCoords) {
+        double dotResult = 0;
+
+        for (int dimension = 0; dimension < lhsCoords.length; ++dimension) {
+            dotResult += lhsCoords[dimension] * rhsCoords[dimension];
+        }
+
+        return dotResult;
+    }
+
     public static int computeDimensionCount(int categoryCount) {
         return categoryCount - 1;
     }
