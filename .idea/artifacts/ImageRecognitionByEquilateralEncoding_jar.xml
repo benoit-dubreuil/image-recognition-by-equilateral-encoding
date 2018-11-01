@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ImageRecognitionByEquilateralEncoding:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ImageRecognitionByEquilateralEncoding_jar</output-path>
+    <root id="archive" name="ImageRecognitionByEquilateralEncoding.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/manifest/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="ImageRecognitionByEquilateralEncoding" />
+    </root>
+  </artifact>
+</component>
