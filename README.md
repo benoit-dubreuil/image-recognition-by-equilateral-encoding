@@ -8,7 +8,7 @@ Description
 
 ### Disclaimer
 
-This project's purpose was only to practice and learn the equilateral encoding normalization technique.
+This project's purpose was only to practice and learn the equilateral encoding normalization technique. The code is not perfect, optimal and the same applies for its conception.
 
 ### Goal
 
