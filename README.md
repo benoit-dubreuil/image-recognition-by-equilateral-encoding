@@ -22,7 +22,7 @@ Java JRE 10 or greater.
 
 Execute the .jar file under the following folder hierarchy : out/artifacts/ImageRecognitionByEquilateralEncoding_jar/
 
-Load the image to the right by clicking on the buttons Image->Load Ref Image.
+Load the image to the right by clicking on the buttons Image->Load Ref Image. 
 Load the image to the left by clicking on the buttons Image->Load Image.
 
 Once the left and right images are loaded, the percentage shown will be the actual resemblance of the two images.
