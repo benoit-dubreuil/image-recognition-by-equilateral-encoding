@@ -23,7 +23,7 @@ public final class ImageDataRecognition {
 
             EquilateralEncodingTable table = ControllerIREE.getInstance().getEncodingTable();
             int maxPixelCount = Math.max(lhs.getPixelCount(), rhs.getPixelCount());
-            double emptyPixelMeanValue = 1.0 / maxPixelCount;
+            double emptyPixelMeanValue = 1.0;
 
             for (int pixel = 0; pixel < maxPixelCount; ++pixel) {
 
