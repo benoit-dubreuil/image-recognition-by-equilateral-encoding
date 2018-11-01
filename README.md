@@ -1,6 +1,8 @@
 Image Recognition by Equilateral Encoding
 =========================================
 
+Please, read my blog entry for more informations : https://www.gamedev.net/blogs/entry/2265660-image-recognition-by-equilateral-encoding/
+
 ![Deer Comparison](/readme-images/DeerComparison.png)
 
 Description
