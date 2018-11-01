@@ -29,7 +29,8 @@ Once the left and right images are loaded, the percentage shown will be the actu
 
 ### How It Works
 
-The comparison is made on a pixel versus pixel basis and thus shapes are do not count towards the similarities between the two images.  
+The comparison is made on a pixel versus pixel basis and thus shapes are do not count towards the similarities between the two images.
+
 Also, the equilateral encoding algorithm's purpos is to encode categories, so I specified the following colors as categories :
 * Red
 * Green
