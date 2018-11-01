@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/java,windows,intellij
 
 ### Intellij ###
@@ -132,3 +131,6 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/java,windows,intellij
+
+!out/
+!out/artifacts/ImageRecognitionByEquilateralEncoding_jar/*.jar
